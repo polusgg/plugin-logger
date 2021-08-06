@@ -26,8 +26,6 @@ export default class extends BasePlugin {
       throw new Error("No mongo url set. expected env var MONGO_URL");
     }
 
-    console.log(process.env.MONGO_URL);
-
     const client = new MongoClient(process.env.MONGO_URL, {
       tls: true,
       tlsCAFile: "../plugin-logger/ca-certificate.crt",
