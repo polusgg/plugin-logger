@@ -40,7 +40,7 @@ export default class extends BasePlugin {
     this.server.on("server.lobby.created", evt => {
       const lobbyUuid = uuidv4();
 
-      evt.getLobby().setMeta("pgg.log.uuid", uuidv4());
+      evt.getLobby().setMeta("pgg.log.uuid", lobbyUuid);
 
       Events.fire({
         type: "lobbyCreated",

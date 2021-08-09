@@ -17,6 +17,7 @@ export type Event<Detail = any> = {
   toUuid: string;
 } | {
   type: "gameSettings";
+  gameUuid: string;
   settings: {
     [key: string]: number | string | boolean;
   };
