@@ -3,6 +3,7 @@ import { MongoClient } from "mongodb";
 import { Events } from "./events";
 import { v4 as uuidv4 } from "uuid";
 import { DeathReason, SystemType } from "@nodepolus/framework/src/types/enums";
+import path from "path";
 
 const pluginMetadata: PluginMetadata = {
   name: "Polus.gg Logger",
@@ -28,7 +29,7 @@ export default class extends BasePlugin {
 
     const client = new MongoClient(process.env.MONGO_URL, {
       tls: true,
-      tlsCAFile: "../plugin-logger/ca-certificate.crt",
+      tlsCAFile: path.join(__dirname, "ca-certificate.crt")
     });
 
     client.connect().then(_ => {
