@@ -29,7 +29,7 @@ export default class extends BasePlugin {
 
     const client = new MongoClient(process.env.MONGO_URL, {
       tls: true,
-      tlsCAFile: path.join(__dirname, "ca-certificate.crt")
+      tlsCAFile: path.join(__dirname, "ca-certificate-pggevents.crt")
     });
 
     client.connect().then(_ => {
