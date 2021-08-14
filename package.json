@@ -1,7 +1,7 @@
 {
   "name": "@polusgg/plugin-logger",
   "np-plugin": true,
-  "version": "0.1.0",
+  "version": "0.1.0-1",
   "description": "Logging plugin",
   "scripts": {
     "lint": "eslint . --ext .ts",
@@ -26,7 +26,7 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "@nodepolus/framework": "../nodepolus-framework",
+    "@nodepolus/framework": "latest",
     "mongodb": "^4.0.1",
     "uuid": "^8.3.2"
   }
