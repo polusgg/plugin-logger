@@ -27,23 +27,23 @@ export default class extends BasePlugin {
       if (process.env.MONGO_URL === undefined) {
         throw new Error("No mongo url set. expected env var MONGO_URL");
       }
-  
+
       const client = new MongoClient(process.env.MONGO_URL, {
         tls: true,
         tlsCAFile: path.join(__dirname, "ca-certificate-pggevents.crt"),
       });
-  
+
       client.connect().then(_ => {
         Events.collection = client.db("polusgg-events").collection("events");
-  
+
         this.logger.info("Event collection loaded");
       }).catch(console.log);
-  
+
       this.server.on("server.lobby.created", evt => {
         const lobbyUuid = uuidv4();
-  
+
         evt.getLobby().setMeta("pgg.log.uuid", lobbyUuid);
-  
+
         Events.fire({
           type: "lobbyCreated",
           code: evt.getLobby().getCode(),
@@ -51,7 +51,7 @@ export default class extends BasePlugin {
           lobbyUuid: lobbyUuid,
         });
       });
-  
+
       this.server.on("server.lobby.join", evt => {
         if (evt.getLobby() !== undefined) {
           Events.fire({
@@ -62,14 +62,14 @@ export default class extends BasePlugin {
           });
         }
       });
-  
+
       this.server.on("player.left", evt => {
         Events.fire({
           type: "lobbyLeft",
           connectionUuid: evt.getPlayer().getSafeConnection().getMeta<string>("pgg.log.uuid"),
         });
       });
-  
+
       this.server.on("lobby.host.migrated", evt => {
         Events.fire({
           type: "hostReassigned",
@@ -77,15 +77,15 @@ export default class extends BasePlugin {
           toUuid: evt.getNewHost().getMeta<string>("pgg.log.uuid"),
         });
       });
-  
+
       this.server.on("game.started", evt => {
         evt.getGame().setMeta("pgg.log.uuid", uuidv4());
-  
+
         evt.getGame().getLobby().getPlayers()
           .forEach(player => {
             player.setMeta("pgg.log.uuid", uuidv4());
           });
-  
+
         setTimeout(() => {
           evt.getGame().getLobby().getPlayers()
             .forEach(player => {
@@ -106,10 +106,10 @@ export default class extends BasePlugin {
                 },
                 tasks: player.getTasks().map(t => t[0].id),
               });
-  
+
               player.deleteMeta("pgg.log.detail");
             });
-  
+
           Events.fire({
             type: "gameCreated",
             gameUuid: evt.getGame().getMeta<string>("pgg.log.uuid"),
@@ -117,19 +117,19 @@ export default class extends BasePlugin {
           });
         }, 100);
       });
-  
+
       this.server.on("player.position.updated", event => {
         if (event.getPlayer().getMeta<string | undefined>("pgg.log.uuid") === undefined) {
           return;
         }
-  
+
         Events.fire({
           type: "playerMove",
           playerUuid: event.getPlayer().getMeta<string>("pgg.log.uuid"),
           position: [event.getNewPosition().getX(), event.getNewPosition().getY()],
         });
       });
-  
+
       this.server.on("player.task.completed", event => {
         Events.fire({
           type: "playerTaskCompleted",
@@ -137,7 +137,7 @@ export default class extends BasePlugin {
           task: event.getTask().id,
         });
       });
-  
+
       this.server.on("player.died", event => {
         if (event.getReason() === DeathReason.Unknown) {
           setTimeout(() => {
@@ -157,7 +157,7 @@ export default class extends BasePlugin {
           });
         }
       });
-  
+
       this.server.on("player.murdered", event => {
         Events.fire({
           type: "playerDiedEvent",
@@ -168,17 +168,17 @@ export default class extends BasePlugin {
           },
         });
       });
-  
+
       this.server.on("server.lobby.destroyed", event => {
         Events.fire({
           type: "lobbyDestroyed",
           lobbyUuid: event.getLobby().getMeta<string>("pgg.log.uuid"),
         });
       });
-  
+
       this.server.on("meeting.started", event => {
         event.getMeetingHud().getMeetingHud().setMeta("pgg.log.uuid", uuidv4());
-  
+
         Events.fire({
           type: "meetingCreated",
           callerUuid: event.getCaller().getMeta<string>("pgg.log.uuid"),
@@ -186,10 +186,10 @@ export default class extends BasePlugin {
           meetingUuid: event.getMeetingHud().getMeetingHud().getMeta<string>("pgg.log.uuid"),
         });
       });
-  
+
       this.server.on("meeting.vote.added", event => {
         const uuid = event.getGame().getLobby().getMeetingHud()!.getMeetingHud().getMeta<string>("pgg.log.uuid");
-  
+
         Events.fire({
           type: "meetingVote",
           meetingUuid: uuid,
@@ -197,22 +197,22 @@ export default class extends BasePlugin {
           accuserUuid: event.getVoter().getMeta<string>("pgg.log.uuid"),
         });
       });
-  
+
       this.server.on("meeting.concluded", event => {
         const uuid = event.getGame().getLobby().getMeetingHud()!.getMeetingHud().getMeta<string>("pgg.log.uuid");
-  
+
         Events.fire({
           type: "meetingEnded",
           meetingUuid: uuid,
           exiledUuid: event.getExiledPlayer()?.getMeta<string>("pgg.log.uuid"),
         });
       });
-  
+
       this.server.on("room.sabotaged", event => {
         const sabotageUuid = uuidv4();
-  
+
         event.getGame().setMeta("pgg.log.sabotage.uuid", sabotageUuid);
-  
+
         Events.fire({
           type: "sabotageStarted",
           callerUuid: event.getPlayer()?.getMeta<string>("pgg.log.uuid"),
@@ -220,20 +220,20 @@ export default class extends BasePlugin {
           detail: event.getGame().getMeta("pgg.log.sabotage.detail") ?? {},
           sabotageType: SystemType[event.getSystem().getType()],
         });
-  
+
         event.getGame().deleteMeta("pgg.log.sabotage.detail");
       });
-  
+
       this.server.on("room.repaired", event => {
         Events.fire({
           type: "sabotageEnded",
           sabotageUuid: event.getGame().getMeta("pgg.log.sabotage.uuid"),
           detail: event.getGame().getMeta("pgg.log.sabotage.detail") ?? {},
         });
-  
+
         event.getGame().deleteMeta("pgg.log.sabotage.detail");
       });
-  
+
       this.server.on("room.doors.opened", event => {
         Events.fire({
           type: "doorOpened",
@@ -242,10 +242,10 @@ export default class extends BasePlugin {
           gameUuid: event.getGame().getMeta<string>("pgg.log.uuid"),
           doorIds: event.getDoors(),
         });
-  
+
         event.getGame().deleteMeta("pgg.log.door.detail");
       });
-  
+
       this.server.on("room.doors.closed", event => {
         Events.fire({
           type: "doorClosed",
@@ -254,10 +254,10 @@ export default class extends BasePlugin {
           gameUuid: event.getGame().getMeta<string>("pgg.log.uuid"),
           doorIds: event.getDoors(),
         });
-  
+
         event.getGame().deleteMeta("pgg.log.door.detail");
       });
-  
+
       this.server.on("game.vent.entered", event => {
         Events.fire({
           type: "ventEntered",
@@ -265,7 +265,7 @@ export default class extends BasePlugin {
           ventId: event.getVent().getId(),
         });
       });
-  
+
       this.server.on("game.vent.exited", event => {
         Events.fire({
           type: "ventExited",
@@ -273,15 +273,18 @@ export default class extends BasePlugin {
           ventId: event.getVent().getId(),
         });
       });
-  
+
       this.server.on("player.chat.message", event => {
         Events.fire({
           type: "playerChat",
           connectionUuid: event.getPlayer().getSafeConnection().getMeta<string>("pgg.log.uuid"),
           message: event.getMessage().toString(),
+          lobbyUuid: event.getPlayer().getLobby().getMeta<string>("pgg.log.uuid"),
+          gameUuid: event.getPlayer().getLobby().getGame()
+            ?.getMeta<string | undefined>("pgg.log.uuid"),
         });
       });
-    } catch(err) {
+    } catch (err) {
       console.log(err);
     }
   }

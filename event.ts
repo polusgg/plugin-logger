@@ -120,6 +120,8 @@ export type Event<Detail = any> = {
 } | {
   type: "playerChat";
   connectionUuid: string;
+  lobbyUuid: string;
+  gameUuid?: string;
   message: string;
 };
 
