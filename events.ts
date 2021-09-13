@@ -88,7 +88,9 @@ setInterval(() => {
     Events.realtime.ping();
 
     if (Date.now() - Events.lastPong > 10000) {
-      Events.realtime.terminate();
+      delete Events.realtime;
+
+      Events.realtime.close();
     }
   }
 }, 5000);
