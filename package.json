@@ -27,7 +27,9 @@
   },
   "dependencies": {
     "@nodepolus/framework": "latest",
+    "@types/ws": "^7.4.7",
     "mongodb": "^4.0.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "ws": "^8.2.2"
   }
 }
