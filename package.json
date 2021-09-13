@@ -1,7 +1,7 @@
 {
   "name": "@polusgg/plugin-logger",
   "np-plugin": true,
-  "version": "0.1.0-6",
+  "version": "0.1.0-7",
   "description": "Logging plugin",
   "scripts": {
     "lint": "eslint . --ext .ts",
