@@ -9,10 +9,10 @@ export class Events {
 
   static fire(event: Event): void {
     if (this.realtime) {
-      this.realtime.send({
+      this.realtime.send(JSON.stringify({
         type: "NODE_EVENT",
         event: event,
-      });
+      }));
     }
 
     this.collection?.insertOne({
