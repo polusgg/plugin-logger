@@ -85,11 +85,13 @@ Events.attemptRealtimeConnection();
 
 setInterval(() => {
   if (Events.realtime) {
+    console.log("Realtime connection sustained", { lastPong: Events.lastPong, timeDiff: Date.now() - Events.lastPong });
+
     Events.realtime.ping();
 
     if (Date.now() - Events.lastPong > 10000) {
       Events.realtime.close();
-      
+
       delete Events.realtime;
     }
   }
