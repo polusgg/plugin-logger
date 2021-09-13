@@ -4,6 +4,7 @@ import { Events } from "./events";
 import { v4 as uuidv4 } from "uuid";
 import { DeathReason, SystemType } from "@nodepolus/framework/src/types/enums";
 import path from "path";
+import { ReportOutcome } from "@nodepolus/framework/src/types/enums";
 
 const pluginMetadata: PluginMetadata = {
   name: "Polus.gg Logger",
