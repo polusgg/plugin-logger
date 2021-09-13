@@ -1,3 +1,5 @@
+import { ReportReason } from "@nodepolus/framework/src/types/enums";
+
 export type Event<Detail = any> = {
   type: "lobbyCreated";
   creatorUuid: string;
@@ -123,6 +125,13 @@ export type Event<Detail = any> = {
   lobbyUuid: string;
   gameUuid?: string;
   message: string;
+} | {
+  type: "playerReported";
+  lobbyUuid: string;
+  gameUuid?: string;
+  reported: string;
+  reporter: string;
+  reason: ReportReason;
 };
 
 export type SpecificEvent<T extends Event["type"], D = any> = Extract<Event<D>, { type: T }>;

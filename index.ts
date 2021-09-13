@@ -33,6 +33,19 @@ export default class extends BasePlugin {
         tlsCAFile: path.join(__dirname, "ca-certificate-pggevents.crt"),
       });
 
+      this.server.on("server.player.reported", evt => {
+        Events.fire({
+          type: "playerReported",
+          lobbyUuid: evt.getLobby().getMeta<string>("pgg.log.uuid"),
+          reported: evt.getPlayer().getConnection()!.getMeta<string>("pgg.log.uuid"),
+          reporter: evt.getReportingPlayer().getConnection()!.getMeta<string>("pgg.log.uuid"),
+          gameUuid: evt.getLobby().getGame()?.getMeta<string>("pgg.log.uuid"),
+          reason: evt.getReportReason(),
+        });
+
+        evt.setReportOutcome(ReportOutcome.Reported);
+      });
+
       client.connect().then(_ => {
         Events.collection = client.db("polusgg-events").collection("events");
 
