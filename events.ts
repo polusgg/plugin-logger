@@ -58,7 +58,6 @@ export class Events {
             this.realtime = sock;
           } else {
             console.log("UNEXPECTED MESSAGE", d);
-            sock.close();
           }
         } catch {
           console.log("INVALID MESSAGE", msg, msg.toString());
