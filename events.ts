@@ -73,6 +73,7 @@ export class Events {
 
     sock.on("close", () => {
       console.log("SOCKET CLOSED");
+      delete Events.realtime;
 
       setTimeout(() => {
         this.attemptRealtimeConnection();
