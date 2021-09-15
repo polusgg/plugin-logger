@@ -54,7 +54,7 @@ export class Events {
         try {
           const d = JSON.parse(msg.toString());
 
-          if (d.event === "AUTHENTICATION_SUCCESS") {
+          if (d.type === "AUTHENTICATION_SUCCESS") {
             this.realtime = sock;
           } else {
             console.log("UNEXPECTED MESSAGE", d);
